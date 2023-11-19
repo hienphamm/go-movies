@@ -15,7 +15,7 @@ RUN go mod download
 COPY . .
 
 # Build the Golang application
-RUN go build -o main ./cmd/api/main.go
+RUN go build -o main main.go
 
 # Final Stage
 FROM alpine:3.18
