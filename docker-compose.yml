@@ -1,30 +1,38 @@
 version: '3.9'
 services:
-  # PostgreSQL service
+  # PostgresSQL service
   postgres:
     image: postgres:14-alpine
     environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
       POSTGRES_DB: movies
       POSTGRES_USER: hienphamm
       POSTGRES_PASSWORD: secret
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U hienphamm -d movies -h localhost -p 5432" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
       - "5432:5432"
     networks:
       - app-network
 
-  # Golang application service
+  # Golang's application service
   golang-app:
     build:
       context: .
       dockerfile: Dockerfile
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_USER: movies
-      DB_PASSWORD: hienphamm
-      DB_NAME: secret
+      DB_USER: hienphamm
+      DB_PASSWORD: secret
+      DB_NAME: movies
     ports:
       - "8080:8080"
     networks:
