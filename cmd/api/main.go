@@ -1,11 +1,11 @@
-package main
+package api
 
 import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/hienphamm/go-movies/cmd/internal/repository"
-	"github.com/hienphamm/go-movies/cmd/internal/repository/dbrepo"
+	"github.com/hienphamm/go-movies/internal/repository"
+	"github.com/hienphamm/go-movies/internal/repository/dbrepo"
 	"log"
 	"net/http"
 	"os"
@@ -19,7 +19,7 @@ type application struct {
 	DB     repository.DatabaseRepo
 }
 
-func main() {
+func Run() {
 	// set application config
 	var app application
 
@@ -30,7 +30,7 @@ func main() {
 	//connect to database
 	conn, err := app.connectToDB()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("got error", err)
 	}
 
 	app.DB = &dbrepo.PostgresDBRepo{DB: conn}

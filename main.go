@@ -1,9 +1,7 @@
 package main
 
-import (
-	"fmt"
-)
+import "github.com/hienphamm/go-movies/cmd/api"
 
 func main() {
-	fmt.Println("Hello world !")
+	api.Run()
 }

@@ -3,7 +3,7 @@ package dbrepo
 import (
 	"context"
 	"database/sql"
-	"github.com/hienphamm/go-movies/cmd/internal/model"
+	"github.com/hienphamm/go-movies/internal/model"
 	"log"
 	"time"
 )

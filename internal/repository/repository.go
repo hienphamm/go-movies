@@ -2,7 +2,7 @@ package repository
 
 import (
 	"database/sql"
-	"github.com/hienphamm/go-movies/cmd/internal/model"
+	"github.com/hienphamm/go-movies/internal/model"
 )
 
 type DatabaseRepo interface {
