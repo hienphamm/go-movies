@@ -2,19 +2,19 @@ package dbrepo
 
 import (
 	"context"
-	"database/sql"
 	"github.com/hienphamm/go-movies/internal/model"
+	"github.com/jackc/pgx/v4"
 	"log"
 	"time"
 )
 
 type PostgresDBRepo struct {
-	DB *sql.DB
+	DB *pgx.Conn
 }
 
 const dbTimeout = time.Second * 3
 
-func (p *PostgresDBRepo) Connection() *sql.DB {
+func (p *PostgresDBRepo) Connection() *pgx.Conn {
 	return p.DB
 }
 
@@ -33,7 +33,7 @@ func (p *PostgresDBRepo) AllMovies() ([]*model.Movie, error) {
 		title
 	`
 
-	rows, err := p.DB.QueryContext(ctx, query)
+	rows, err := p.DB.Query(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -61,4 +61,29 @@ func (p *PostgresDBRepo) AllMovies() ([]*model.Movie, error) {
 	}
 
 	return movies, nil
+}
+
+func (p *PostgresDBRepo) GetUserByEmail(email string) (*model.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `select id, email, first_name, last_name, created_at, updated_at from users where email = $1`
+	row, err := p.DB.Query(ctx, query, email)
+
+	if err != nil {
+		return nil, err
+	}
+	defer row.Close()
+
+	var user model.User
+	err = row.Scan(
+		&user.ID,
+		&user.Email,
+		&user.FirstName,
+		&user.LastName,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+
+	return &user, nil
 }

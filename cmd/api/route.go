@@ -13,6 +13,7 @@ func (app *application) route() *chi.Mux {
 
 	r.Get("/", Hello)
 	r.Get("/movies", app.AllMovies)
+	r.Post("/authenticate", app.authenticate)
 
 	return r
 }
