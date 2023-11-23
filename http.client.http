@@ -3,5 +3,11 @@ Content-Type: application/json
 
 {
   "email": "hienpham@gmail.com",
-  "password": "123123"
+  "password": "mysecretpassword"
 }
+###
+GET http://localhost:8080/movies
+Content-Type: application/json
+
+###
+GET https://cdn.contentstack.io/

@@ -10,6 +10,6 @@ type Movie struct {
 	Runtime     int       `json:"runtime"`
 	Description string    `json:"description"`
 	Image       string    `json:"image"`
-	CreatedAt   time.Time `json:"_"`
-	UpdatedAt   time.Time `json:"_"`
+	CreatedAt   time.Time `json:"-"`
+	UpdatedAt   time.Time `json:"-"`
 }

@@ -67,23 +67,28 @@ func (p *PostgresDBRepo) GetUserByEmail(email string) (*model.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `select id, email, first_name, last_name, created_at, updated_at from users where email = $1`
-	row, err := p.DB.Query(ctx, query, email)
-
-	if err != nil {
-		return nil, err
-	}
-	defer row.Close()
-
 	var user model.User
-	err = row.Scan(
+
+	query := `
+			select 
+				id, email, first_name, last_name, created_at, updated_at, password 
+			from 
+			    users 
+			where 
+			    email = $1`
+	err := p.DB.QueryRow(ctx, query, email).Scan(
 		&user.ID,
 		&user.Email,
 		&user.FirstName,
 		&user.LastName,
 		&user.CreatedAt,
 		&user.UpdatedAt,
+		&user.Password,
 	)
+
+	if err != nil {
+		return nil, err
+	}
 
 	return &user, nil
 }

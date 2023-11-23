@@ -32,7 +32,7 @@ func Run() {
 	var app application
 
 	//read from command line
-	flag.StringVar(&app.DNS, "DNS", "host=172.23.0.2 port=5432 user=hienphamm password=secret dbname=movies sslmode=disable timezone=UTC", "Postgres connection string")
+	flag.StringVar(&app.DNS, "DNS", "host=localhost port=5432 user=hienphamm password=secret dbname=movies sslmode=disable timezone=UTC", "Postgres connection string")
 	flag.StringVar(&app.JWTSecret, "jwt-secret", "verysecret", "signing secret")
 	flag.StringVar(&app.JWTIssuer, "jwt-issuer", "example.com", "signing issuer")
 	flag.StringVar(&app.JWTAudience, "jwt-audience", "example.com", "signing audience")
@@ -67,48 +67,4 @@ func Run() {
 		fmt.Printf("error starting server: %s\n", err)
 		os.Exit(1)
 	}
-}
-
-func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
-	// Read json payload
-	var requestPayload struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
-
-	err := app.readJSON(w, r, &requestPayload)
-	if err != nil {
-		app.errorJSON(w, err, http.StatusBadRequest)
-		return
-	}
-
-	// Validate user against database
-	user, err := app.DB.GetUserByEmail(requestPayload.Email)
-	if err != nil {
-		app.errorJSON(w, err)
-		return
-	}
-
-	// Check password
-	valid, err := user.PasswordMatches(requestPayload.Password)
-	if err != nil || !valid {
-		app.errorJSON(w, errors.New("invalid credentials"), http.StatusBadRequest)
-		return
-	}
-
-	// Create a jwt user
-	u := jwtUser{
-		ID:        user.ID,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-	}
-
-	// Generate tokens
-	tokens, err := app.auth.generateTokenPair(&u)
-	if err != nil {
-		app.errorJSON(w, err)
-		return
-	}
-
-	app.writeJSON(w, http.StatusAccepted, tokens)
 }
